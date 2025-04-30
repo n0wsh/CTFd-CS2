@@ -1,0 +1,57 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@font-face {
+  font-family: "High Speed";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/assets/fonts/high-speed-regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Stratum2";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/assets/fonts/stratum2-regular-webfont.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Stratum2";
+  font-style: normal;
+  font-weight: 500;
+  src: url("/assets/fonts/stratum2-medium-webfont.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Stratum2";
+  font-style: normal;
+  font-weight: bold;
+  src: url("/assets/fonts/stratum2-bold-webfont.ttf") format("truetype");
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-highspeed: "High Speed", sans-serif;
+  --font-stratum2: "Stratum2", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Stratum2", sans-serif;
+}

@@ -3,7 +3,7 @@ from flask_babel import lazy_gettext as _l
 
 from CTFd.constants.config import ChallengeVisibilityTypes, Configs
 from CTFd.utils.config import is_teams_mode
-from CTFd.utils.dates import ctf_ended, ctf_paused, ctf_started
+from CTFd.utils.dates import ctf_ended, ctf_paused, ctf_started, get_ctf_end
 from CTFd.utils.decorators import (
     during_ctf_time_only,
     require_complete_profile,
@@ -46,4 +46,17 @@ def listing():
     if ctf_ended() is True:
         infos.append(_l("%(ctf_name)s has ended", ctf_name=Configs.ctf_name))
 
-    return render_template("challenges.html", infos=infos, errors=errors)
+    team = get_current_team()
+    score = 0
+    if team is not None:
+        score = team.get_score()
+
+    ctf_end = get_ctf_end()
+
+    return render_template(
+        "challenges.html",
+        infos=infos,
+        errors=errors,
+        score=score,
+        ctf_end=ctf_end,
+    )

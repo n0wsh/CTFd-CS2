@@ -85,3 +85,11 @@ def isoformat(dt: DateTime) -> str:
         print("Invalid datetime object for time filter function.")
         return None
     return dt.isoformat() + "Z"
+
+
+def get_ctf_end() -> Union[DateTime, None]:
+    """Return the CTF end datetime."""
+    end = get_config("end")
+    if end:
+        return unix_time_to_utc(int(end))
+    return None

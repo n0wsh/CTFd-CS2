@@ -1,0 +1,23 @@
+{
+  "name": "scoreboard-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "cross-env NODE_ENV=development npx nodemon"
+  },
+  "author": "Gantumur Zolboobayar <zolboobayar@metainc.mn>",
+  "license": "MIT",
+  "description": "Scoreboard backend",
+  "dependencies": {
+    "dotenv-flow": "^4.1.0",
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "cross-env": "^7.0.3",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3"
+  }
+}

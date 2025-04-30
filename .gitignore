@@ -80,3 +80,8 @@ node_modules/
 
 # Flask Profiler files
 flask_profiler.sql
+
+scoreboard/node_modules
+scoreboard/.yarn/*
+scoreboard-server/node_modules
+scoreboard-server/.yarn/*
