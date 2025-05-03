@@ -2,12 +2,12 @@ import React from "react";
 
 export const Score = ({ score }: { score: number }) => {
   const getColor = (score: number): string => {
-    if (score >= 30000) return "#FED700";
-    if (score >= 25000) return "#EB4B4B";
-    if (score >= 20000) return "#D22CE6";
-    if (score >= 15000) return "#8846FF";
-    if (score >= 10000) return "#4B69FF";
-    if (score >= 5000) return "#5E98D9";
+    if (score >= 5000) return "#FED700";
+    if (score >= 4000) return "#EB4B4B";
+    if (score >= 3000) return "#D22CE6";
+    if (score >= 2000) return "#8846FF";
+    if (score >= 1000) return "#4B69FF";
+    if (score >= 500) return "#5E98D9";
     return "#B1C3D9";
   };
 

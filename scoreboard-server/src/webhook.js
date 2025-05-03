@@ -15,7 +15,7 @@ export const webhookHandler = async (req, res) => {
     .update(req.body)
     .digest("hex");
 
-  if (digest !== req.headers["x-valorant-signature"]) {
+  if (digest !== req.headers["x-cs2-signature"]) {
     console.warn(
       `Rejected webhook invocation from ${
         req.headers["x-forwarded-for"] ?? req.socket.remoteAddress

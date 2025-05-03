@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { TaskQueueProvider } from "@/contexts/TaskQueueContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -23,12 +24,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <TaskQueueProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <main className="w-screen h-screen bg-mirage-background-image bg-no-repeat bg-center bg-cover overflow-hidden">
+            <div className="relative w-full h-full bg-[#10101080] backdrop-blur-xs flex flex-col items-center justify-center">
+              {children}
+            </div>
+          </main>
+        </body>
+      </html>
+    </TaskQueueProvider>
   );
 }

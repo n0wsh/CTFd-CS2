@@ -14,7 +14,7 @@ services:
       - .:/opt/CTFd:ro
     environment:
       - CTFD_API_URL=http://ctfd:8000/api/v1
-      - CTFD_API_KEY=ctfd_1e4e3ea08ce5da60e46c5f68c6217bdc3da106a5bcbe4974cac7acd3196e85e8
+      - CTFD_API_KEY=ctfd_c034c072626ada9c0cb2cfdb1380f39f98997fd925d0e96bb7186494f00eeeb8
     networks:
         default:
         internal:
@@ -33,8 +33,8 @@ services:
       - ACCESS_LOG=-
       - ERROR_LOG=-
       - REVERSE_PROXY=true
-      - VALORANT_WEBHOOK_URL=http://scoreboard-server:3000/api/webhook
-      - VALORANT_WEBHOOK_SECRET=cde314dda67268f78747458e1a9b9677905ea5ce5d02cc1a19374c091d7db4a7
+      - CS2_WEBHOOK_URL=http://scoreboard-server:3000/api/webhook
+      - CS2_WEBHOOK_SECRET=cde314dda67268f78747458e1a9b9677905ea5ce5d02cc1a19374c091d7db4a7
     volumes:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
