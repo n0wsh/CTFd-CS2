@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-
 import { io } from "socket.io-client";
 
 import { ScoreboardItem } from "@/server/scoreboard";
+import { FirstBloodItem } from "@/server/firstblood";
 
 import { useTaskQueue } from "@/contexts/TaskQueueContext";
-
 import { playSound } from "@/core/SoundDispatcher";
-import { FirstBloodItem } from "@/server/firstblood";
 
 export function useScoreboard({
   endAt,
@@ -17,13 +15,14 @@ export function useScoreboard({
   initialScoreboard: ScoreboardItem[];
 }) {
   const [scoreboard, setScoreboard] = useState(initialScoreboard);
-
   const scoreboardRef = useRef(scoreboard);
+  const taskQueue = useTaskQueue();
+
   useEffect(() => {
     scoreboardRef.current = scoreboard;
   }, [scoreboard]);
 
-  // 🔥 INITIAL FETCH
+  // Initial fetch
   useEffect(() => {
     async function fetchInitialScoreboard() {
       try {
@@ -37,63 +36,57 @@ export function useScoreboard({
     fetchInitialScoreboard();
   }, []);
 
+  // Sound when game ends
   useEffect(() => {
     const now = Date.now() / 1000;
     const timeUntilEnd = endAt - now;
-    if (timeUntilEnd <= 0) {
-      return;
-    }
+    if (timeUntilEnd <= 0) return;
 
-    const timeout = setTimeout(async () => {
-      await playSound("/assets/sounds/end.mp3"); // ENDED
+    const timeout = setTimeout(() => {
+      playSound("end");
     }, timeUntilEnd * 1000);
+
     return () => clearTimeout(timeout);
   }, [endAt]);
 
-  const taskQueue = useTaskQueue();
-
+  // WebSocket listener
   useEffect(() => {
     const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL as string);
+
     socket.on(
       "submission",
       async (submission: {
         success: boolean;
-        status: "correct" | "incorrect" | "already_solved";
         team: { id: number; name: string };
       }) => {
-        if (submission.status === "incorrect") {
-          // Increment fail count
+        console.log("Received submission:", submission);
+
+        if (!submission.success) {
+          // Incorrect submission, increase fail count
           setScoreboard((scoreboard) =>
-            scoreboard.map((standing) => {
-              if (standing.id === submission.team.id) {
-                return { ...standing, fails: standing.fails + 1 };
-              }
-              return standing;
-            })
+            scoreboard.map((standing) =>
+              standing.id === submission.team.id
+                ? { ...standing, fails: standing.fails + 1 }
+                : standing
+            )
           );
           return;
         }
 
-        if (submission.status === "already_solved") {
-          // No-op: team already solved this, no update
-          return;
-        }
+        // Correct submission
+        const [firstBlood, newScoreboard] = await Promise.all([
+          fetch("/api/firstblood").then((res) => res.json()),
+          fetch("/api/scoreboard").then((res) => res.json()),
+        ]);
 
-        // Only here if submission.status === "correct"
-        const firstBlood: FirstBloodItem[] = await fetch(
-          "/api/firstblood"
-        ).then((res) => res.json());
-        const newScoreboard: ScoreboardItem[] = await fetch(
-          "/api/scoreboard"
-        ).then((res) => res.json());
-
-        const firstBloodList = firstBlood.filter(
-          (el) => el.team_id === submission.team.id
+        const teamBloods = firstBlood.filter(
+          (el: FirstBloodItem) => el.team_id === submission.team.id
         );
 
-        const teamID = firstBloodList[firstBloodList.length - 1]?.team_id;
-
-        const matchingTeam = newScoreboard.find((team) => team.id === teamID);
+        const latestBlood = teamBloods[teamBloods.length - 1];
+        const matchingTeam = newScoreboard.find(
+          (team: ScoreboardItem) => team.id === latestBlood?.team_id
+        );
 
         taskQueue.push(async () => {
           await playSound("kill").catch(() => {});
@@ -102,16 +95,14 @@ export function useScoreboard({
             localStorage.getItem("firstBloodList") || "[]"
           );
 
-          const latestFirstBlood = firstBloodList[firstBloodList.length - 1];
-
           const isAlreadyAnnounced = playedFirstBloods.includes(
-            latestFirstBlood?.challenge_id
+            latestBlood?.challenge_id
           );
 
-          if (!isAlreadyAnnounced && latestFirstBlood) {
+          if (!isAlreadyAnnounced && latestBlood) {
             await playSound("firstblood").catch(() => {});
             console.log(`First blood for team: ${matchingTeam?.name}`);
-            playedFirstBloods.push(latestFirstBlood.challenge_id);
+            playedFirstBloods.push(latestBlood.challenge_id);
             localStorage.setItem(
               "firstBloodList",
               JSON.stringify(playedFirstBloods)

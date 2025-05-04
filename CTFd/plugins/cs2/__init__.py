@@ -1,4 +1,5 @@
 from functools import wraps
+from flask import Response
 
 from werkzeug.wrappers.json import JSONMixin
 
@@ -7,13 +8,13 @@ from CTFd.utils.dates import ctftime
 
 from .config import config
 from .webhook import CS2Webhook
-
 from .api import load_api
 
 
 def load(app):
     config(app)
-    if not app.config["CS2_WEBHOOK_URL"]:
+
+    if not app.config.get("CS2_WEBHOOK_URL"):
         print("[CS2] Webhook URL not set. Plugin disabled.")
         return
 
@@ -28,24 +29,29 @@ def load(app):
         @wraps(f)
         def wrapper(*args, **kwargs):
             result = f(*args, **kwargs)
+            print("result:", result)
 
             if not ctftime():
                 return result
 
+            # Initialize data as an empty dictionary in case result is not an instance of JSONMixin
             data = {}
-            if isinstance(result, JSONMixin):
+
+            if isinstance(result, Response):
                 try:
-                    data = result.json
-                except Exception:
-                    data = {}
+                    data = result.get_json()  # Get JSON content from the Response
+                except Exception as e:
+                    print(f"Error parsing JSON: {e}")
 
             success = False
+            print("data:", data)
             if (
                 isinstance(data, dict)
                 and data.get("success") == True
                 and isinstance(data.get("data"), dict)
             ):
                 success = data.get("data").get("status") == "correct"
+
             team = get_current_team()
 
             webhook.send_payload(
@@ -59,6 +65,7 @@ def load(app):
 
         return wrapper
 
+    # Wrap the existing challenge submission route
     app.view_functions["api.challenges_challenge_attempt"] = (
         challenge_attempt_decorator(
             app.view_functions["api.challenges_challenge_attempt"]

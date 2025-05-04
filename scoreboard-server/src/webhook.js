@@ -26,6 +26,8 @@ export const webhookHandler = async (req, res) => {
   }
 
   const { type, ...payload } = JSON.parse(req.body.toString("utf-8"));
+  console.log(type);
+  console.log(payload);
   io.emit(type, payload);
   res.status(200).send({ success: true });
 };
