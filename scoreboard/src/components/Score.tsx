@@ -52,13 +52,15 @@ export const Score = ({ score }: { score: number }) => {
           const [main, rest] = stringScore.split(",");
 
           return (
-            <span style={{ color: color, textShadow: `0 0 4px ${color}` }}>
-              {stringScore === "0" ? (
+            <span style={{ color, textShadow: `0 0 4px ${color}` }}>
+              {score === 0 ? (
                 <span>{stringScore}</span>
               ) : (
                 <>
                   <span className="text-[32px]">{main}</span>
-                  <span className="-ml-[7px] text-xl">{"," + rest}</span>
+                  {rest !== undefined && (
+                    <span className="-ml-[7px] text-xl">{"," + rest}</span>
+                  )}
                 </>
               )}
             </span>
