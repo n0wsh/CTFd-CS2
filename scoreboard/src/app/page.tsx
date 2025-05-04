@@ -11,18 +11,18 @@ export type ScoreboardInitialData = {
 };
 
 export default async function Home() {
-  const { started, startAt, endAt } = await fetchCTFStatus();
+  const { startAt, endAt } = await fetchCTFStatus();
 
-  if (!started) {
-    return (
-      <>
-        <CTFTimeClient startAt={startAt} />
-        <h1 className="font-(family-name:--font-highspeed) text-4xl">
-          Haruul Zangi U18 - 2025 FINAL
-        </h1>
-      </>
-    );
-  }
+  // if (!started) {
+  //   return (
+  //     <>
+  //       <CTFTimeClient startAt={startAt} />
+  //       <h1 className="font-(family-name:--font-highspeed) text-4xl">
+  //         Haruul Zangi U18 - 2025 FINAL
+  //       </h1>
+  //     </>
+  //   );
+  // }
 
   const initialScoreboard = await fetchScoreboard();
 
